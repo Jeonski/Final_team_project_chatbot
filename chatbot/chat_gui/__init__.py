@@ -60,8 +60,8 @@ class ChatGUI:
         self.user_image = PhotoImage(file=path.join(self.data_path, "user.png"))
 
         # 이미지 업로드 버튼 추가
-        upload_image_button = Button(self.root, text="Upload Image", command=self.upload_image)
-        upload_image_button.grid(row=2, column=0, padx=5, pady=10, sticky=W)
+        upload_image_button = Button(self.root, text="Do OCR", command=self.upload_image)
+        upload_image_button.grid(row=2, column=0, padx=5, pady=10, sticky=E)
 
         # initialize tkinter stop
 
