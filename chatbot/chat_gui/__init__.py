@@ -1,19 +1,17 @@
 from os import path
 from tkinter import Tk, Canvas, Frame, Label, \
-    ALL, Button, Entry, END, Scrollbar, N, S, E, W, LEFT, PhotoImage
+    ALL, Button, Entry, END, Scrollbar, N, S, E, W, LEFT, PhotoImage, filedialog
 from tkinter.constants import DISABLED, NORMAL, RIGHT
 from threading import Thread, Event
 from time import sleep
 from deep_translator import GoogleTranslator
-
+from PIL import Image, ImageTk
 
 translator_en_kr = GoogleTranslator(source='en', target='korean')
 translator_kr_en = GoogleTranslator(source='korean', target='en')
 
-
 def translate_en_kr(message):
     return translator_en_kr.translate(message)
-
 
 def translate_kr_en(message):
     return translator_kr_en.translate(message)
@@ -60,6 +58,11 @@ class ChatGUI:
 
         self.bot_image = PhotoImage(file=path.join(self.data_path, "robot.png"))
         self.user_image = PhotoImage(file=path.join(self.data_path, "user.png"))
+
+        # 이미지 업로드 버튼 추가
+        upload_image_button = Button(self.root, text="Upload Image", command=self.upload_image)
+        upload_image_button.grid(row=2, column=0, padx=5, pady=10, sticky=W)
+
         # initialize tkinter stop
 
         # get the last bubble objects to move them up for next bubbles
@@ -201,3 +204,14 @@ class ChatGUI:
         Helper method to add the newline in the InputBox
         """
         self.user_input_box.insert(END, "\n")
+
+    # 이미지 업로드 함수 추가
+    def upload_image(self):
+        file_path = filedialog.askopenfilename()
+        if file_path:
+            image = Image.open(file_path)
+            image.thumbnail((200, 200))
+            img = ImageTk.PhotoImage(image)
+            panel = Label(self.canvas, image=img)
+            panel.image = img
+            panel.grid(row=0, column=0, padx=10, pady=10)
