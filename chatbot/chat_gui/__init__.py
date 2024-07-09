@@ -8,6 +8,7 @@ from deep_translator import GoogleTranslator
 from PIL import Image, ImageTk
 import pytesseract
 
+##########테스트 하시는 분 컴퓨터에 설치된 tesseract 경로로 변경 하셔야 됩니다!!##########
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 
@@ -245,4 +246,4 @@ class ChatGUI:
             text = pytesseract.image_to_string(image, lang='eng+kor')  # 언어 설정에 맞게 변경
             self.add_bot_message(text)  # OCR로 추출된 텍스트를 봇 메시지로 추가
         except Exception as e:
-            self.add_bot_message(f"Failed to process image: {str(e)}")
+            self.add_bot_message(f"tesseract를 설치하시고 chat_gui\__init__.py의 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe' 부분을 본인의 설치된 경로로 변경해주세요!")
