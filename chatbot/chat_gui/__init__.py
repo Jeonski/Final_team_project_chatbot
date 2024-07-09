@@ -6,6 +6,10 @@ from threading import Thread, Event
 from time import sleep
 from deep_translator import GoogleTranslator
 from PIL import Image, ImageTk
+import pytesseract
+
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+
 
 translator_en_kr = GoogleTranslator(source='en', target='korean')
 translator_kr_en = GoogleTranslator(source='korean', target='en')
@@ -121,6 +125,26 @@ class ChatGUI:
 
         self.canvas.create_polygon(self.draw_triangle(widget, bot), fill=bg_color, outline=bg_color)
         self.add_icon(widget, bot)
+    
+    #이미지 업로드용 사용자 버블  
+    def show_image_bubble(self, img, bot=True):
+        if self.last_bubble:
+            self.canvas.move(ALL, 0, -(self.last_bubble.winfo_height() + 10))
+        bg_color = "light blue" if bot else "light grey"
+        frame = Frame(self.canvas, bg=bg_color)
+        self.last_bubble = frame
+
+        widget = self.canvas.create_window(50 if bot else 700, 440, window=frame, anchor='nw' if bot else 'ne')
+
+        chat_label = Label(frame, image=img, bg=bg_color)
+        chat_label.image = img
+        chat_label.pack(anchor="w" if bot else 'e', side=LEFT if bot else RIGHT, pady=10, padx=10)
+
+        self.root.update_idletasks()
+        self.canvas.config(scrollregion=self.canvas.bbox("all"))
+
+        self.canvas.create_polygon(self.draw_triangle(widget, bot), fill=bg_color, outline=bg_color)
+        self.add_icon(widget, bot)
 
     def add_icon(self, widget, bot=True):
         """
@@ -212,6 +236,13 @@ class ChatGUI:
             image = Image.open(file_path)
             image.thumbnail((200, 200))
             img = ImageTk.PhotoImage(image)
-            panel = Label(self.canvas, image=img)
-            panel.image = img
-            panel.grid(row=0, column=0, padx=10, pady=10)
+            self.show_image_bubble(img, bot=False)
+            self.process_image(file_path)  # OCR 처리 메서드 호출
+    # OCR 함수 추가
+    def process_image(self, file_path):
+        try:
+            image = Image.open(file_path)
+            text = pytesseract.image_to_string(image, lang='eng+kor')  # 언어 설정에 맞게 변경
+            self.add_bot_message(text)  # OCR로 추출된 텍스트를 봇 메시지로 추가
+        except Exception as e:
+            self.add_bot_message(f"Failed to process image: {str(e)}")
